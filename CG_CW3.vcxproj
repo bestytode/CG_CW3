@@ -157,6 +157,8 @@
     <ClInclude Include="dependencies\glm-master\glm\gtc\random.hpp" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\geometry_renderers.h" />
+    <ClInclude Include="src\mesh.h" />
+    <ClInclude Include="src\model.h" />
     <ClInclude Include="src\scene_manager.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\stb_image.h" />
@@ -167,8 +169,56 @@
     <ClCompile Include="src\test_main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\models\backpack\backpack.mtl" />
+    <None Include="res\models\nanosuit\nanosuit.mtl" />
+    <None Include="res\models\planet\planet.mtl" />
+    <None Include="res\models\rock\rock.mtl" />
     <None Include="res\shaders\debug_light.fs" />
     <None Include="res\shaders\debug_light.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\models\backpack\ao.jpg" />
+    <Image Include="res\models\backpack\diffuse.jpg" />
+    <Image Include="res\models\backpack\normal.png" />
+    <Image Include="res\models\backpack\roughness.jpg" />
+    <Image Include="res\models\backpack\specular.jpg" />
+    <Image Include="res\models\nanosuit\arm_dif.png" />
+    <Image Include="res\models\nanosuit\arm_showroom_ddn.png" />
+    <Image Include="res\models\nanosuit\arm_showroom_refl.png" />
+    <Image Include="res\models\nanosuit\arm_showroom_spec.png" />
+    <Image Include="res\models\nanosuit\back.jpg" />
+    <Image Include="res\models\nanosuit\body_dif.png" />
+    <Image Include="res\models\nanosuit\body_showroom_ddn.png" />
+    <Image Include="res\models\nanosuit\body_showroom_refl.png" />
+    <Image Include="res\models\nanosuit\body_showroom_spec.png" />
+    <Image Include="res\models\nanosuit\cell_arm_alpha.png" />
+    <Image Include="res\models\nanosuit\cell_body_alpha.png" />
+    <Image Include="res\models\nanosuit\cell_ddn.png" />
+    <Image Include="res\models\nanosuit\cell_hand_alpha.png" />
+    <Image Include="res\models\nanosuit\cell_helmet_alpha.png" />
+    <Image Include="res\models\nanosuit\cell_leg_alpha.png" />
+    <Image Include="res\models\nanosuit\front.jpg" />
+    <Image Include="res\models\nanosuit\glass_ddn.png" />
+    <Image Include="res\models\nanosuit\glass_dif.png" />
+    <Image Include="res\models\nanosuit\glass_refl.png" />
+    <Image Include="res\models\nanosuit\hand_dif.png" />
+    <Image Include="res\models\nanosuit\hand_showroom_ddn.png" />
+    <Image Include="res\models\nanosuit\hand_showroom_refl.png" />
+    <Image Include="res\models\nanosuit\hand_showroom_spec.png" />
+    <Image Include="res\models\nanosuit\helmet_diff.png" />
+    <Image Include="res\models\nanosuit\helmet_showroom_ddn.png" />
+    <Image Include="res\models\nanosuit\helmet_showroom_refl.png" />
+    <Image Include="res\models\nanosuit\helmet_showroom_spec.png" />
+    <Image Include="res\models\nanosuit\leg_dif.png" />
+    <Image Include="res\models\nanosuit\leg_showroom_ddn.png" />
+    <Image Include="res\models\nanosuit\leg_showroom_refl.png" />
+    <Image Include="res\models\nanosuit\leg_showroom_spec.png" />
+    <Image Include="res\models\planet\mars.png" />
+    <Image Include="res\models\rock\rock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\models\backpack\source_attribution.txt" />
+    <Text Include="res\models\planet\source.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

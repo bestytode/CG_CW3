@@ -45,6 +45,12 @@
     <ClInclude Include="dependencies\glm-master\glm\gtc\random.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\test_main.cpp">
@@ -57,5 +63,129 @@
   <ItemGroup>
     <None Include="res\shaders\debug_light.vs" />
     <None Include="res\shaders\debug_light.fs" />
+    <None Include="res\models\backpack\backpack.mtl" />
+    <None Include="res\models\nanosuit\nanosuit.mtl" />
+    <None Include="res\models\planet\planet.mtl" />
+    <None Include="res\models\rock\rock.mtl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\models\backpack\ao.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\backpack\diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\backpack\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\backpack\roughness.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\backpack\specular.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\arm_dif.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\arm_showroom_ddn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\arm_showroom_refl.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\arm_showroom_spec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\back.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\body_dif.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\body_showroom_ddn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\body_showroom_refl.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\body_showroom_spec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\cell_arm_alpha.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\cell_body_alpha.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\cell_ddn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\cell_hand_alpha.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\cell_helmet_alpha.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\cell_leg_alpha.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\front.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\glass_ddn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\glass_dif.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\glass_refl.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\hand_dif.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\hand_showroom_ddn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\hand_showroom_refl.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\hand_showroom_spec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\helmet_diff.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\helmet_showroom_ddn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\helmet_showroom_refl.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\helmet_showroom_spec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\leg_dif.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\leg_showroom_ddn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\leg_showroom_refl.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\nanosuit\leg_showroom_spec.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\planet\mars.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\models\rock\rock.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\models\backpack\source_attribution.txt" />
+    <Text Include="res\models\planet\source.txt" />
   </ItemGroup>
 </Project>

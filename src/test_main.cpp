@@ -11,6 +11,7 @@
 #include "scene_manager.h"
 #include "shader.h"
 #include "timer.h"
+#include "model.h"
 
 constexpr int SCR_WIDTH = 1920;  // Screen width
 constexpr int SCR_HEIGHT = 1080; // Screen height
@@ -97,6 +98,13 @@ int main()
 	//timer.stop(); // Timer stops
 
 	bool firstTimeOutputPosition = true;
+
+
+
+
+	Model model = Model("ass");
+	//int a = model.GetMeshNumbers("res/models/nanosuit/nanosuit.obj");
+	int a = model.GetMeshNumbers("res/models/backpack/backpack.obj");
 
 	// Render loop
 	while (!glfwWindowShouldClose(scene_manager.GetWindow())) {

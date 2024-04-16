@@ -7,6 +7,11 @@
 
 #include <vector>
 #include <unordered_map>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <tuple>
+#include <map>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,9 +20,13 @@
 #include "mesh.h"
 #include "shader.h"
 
-// Utility function for loading a 2D texture from file
-// Loading HDR texture when isHDR is true(by default isHDR is true)
-// Marked as static to avoid potential collision
+/**
+ * Loads a texture from a file and returns its OpenGL texture ID.
+ * Assumes an OpenGL context is available and properly set up.
+ *
+ * @param textureFilepath Path to the texture file.
+ * @return OpenGL texture ID for the loaded texture.
+ */
 static unsigned int LoadTexture(const std::string& path, bool isHDR = true);
 
 class Model
@@ -34,144 +43,176 @@ public:
 	 //  - To draw the model using all available textures:
 	 //      model.draw(shader);
 	void Render(Shader& shader, const std::vector<std::string>& textureTypeToUse = {}) {
-		shader.Bind();
-		for (unsigned int i = 0; i < meshes->size(); i++) {
-			(*meshes)[i].Render(shader, textureTypeToUse);
-		}
-		shader.Unbind();
+		for (unsigned int i = 0; i < meshes.size(); i++) 
+			meshes[i].Render(shader, textureTypeToUse);
 	}
 	
 public:
-	int GetMeshNumbers(const std::string& path);
+	/**
+	 * Loads an OBJ file and constructs meshes from it.
+	 * Each 'o' line in the OBJ file starts a new mesh.
+	 * Faces within an object are grouped into a single mesh.
+	 *
+	 * @param objFilePath Path to the OBJ file.
+	 */
 	void LoadOBJ(const std::string& objPath);
+
+	/**
+	 * Loads material properties from an MTL file and maps them to texture objects.
+	 * This mapping aids in assigning materials to faces in the OBJ file.
+	 *
+	 * @param mtlFilePath Path to the MTL file.
+	 * @return A map from material names to their corresponding textures.
+	 */
 	std::unordered_map<std::string, std::vector<Texture>> LoadMTL(const std::string& mtlFilePath);
 
+	void ParseFace(const std::string& vertex, std::vector<unsigned int>& indices);
+
 private:
-	std::vector<Mesh>* meshes;
+	//std::vector<Mesh>* meshes;
+	std::vector<Mesh>meshes;;
 };
-
-// Optional use: helper function to trim leading and trailing whitespaces from a string
-std::string Trim(const std::string& str) 
-{
-	std::string s = str;
-
-	// Left trim
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-		return !std::isspace(ch);
-		}));
-
-	// Right trim
-	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-		return !std::isspace(ch);
-		}).base(), s.end());
-
-	return s;
-}
-
-int Model::GetMeshNumbers(const std::string& path) {
-	std::ifstream file(path);
-	std::string line;
-	int count = 0;
-
-	if (!file.is_open()) {
-		throw std::runtime_error("Failed to open file: " + path);
-	}
-
-	while (std::getline(file, line)) {
-		// Trim leading whitespace
-		//line = Trim(line);
-		
-		// Count lines that strictly start with 'o ' (indicating a new object)
-		if (line.substr(0, 2) == "o ") {
-			count++;
-		}
-	}
-	file.close();
-	return count;
-}
 
 void Model::LoadOBJ(const std::string& objFilePath)
 {
+	std::string baseName = objFilePath.substr(0, objFilePath.find_last_of("."));
+	std::string mtlFilePath = baseName + ".mtl";
+
+	std::unordered_map<std::string, std::vector<Texture>> materialTextures = LoadMTL(mtlFilePath);
+
 	std::ifstream file(objFilePath);
 	if (!file.is_open()) {
 		throw std::runtime_error("Could not open OBJ file: " + objFilePath);
 	}
 
-	std::string line;
+	std::vector<glm::vec3> positions;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::vec2> texCoords;
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 
-	std::unordered_map<std::string, std::vector<Texture>> materialTextures = LoadMTL("path_to_mtl_file");
-
+	std::string line;
 	while (getline(file, line)) {
 		std::stringstream ss(line);
 		std::string prefix;
 		ss >> prefix;
 		if (prefix == "o") {
 			if (!vertices.empty()) {
-				meshes->emplace_back(vertices, indices, textures);
+				meshes.emplace_back(Mesh(vertices, indices, textures));
 				vertices.clear();
 				indices.clear();
 				textures.clear();
 			}
-			continue;
 		}
 		else if (prefix == "v") {
-			// Parse vertex
+			glm::vec3 position;
+			ss >> position.x >> position.y >> position.z;
+			positions.push_back(position);
 		}
 		else if (prefix == "vt") {
-			// Parse texture coordinate
+			glm::vec2 texCoord;
+			ss >> texCoord.x >> texCoord.y;
+			texCoords.emplace_back(texCoord.x, 1.0f - texCoord.y); // Flip the v coordinate
 		}
 		else if (prefix == "vn") {
-			// Parse normal
+			glm::vec3 normal;
+			ss >> normal.x >> normal.y >> normal.z;
+			normals.push_back(normal);
 		}
 		else if (prefix == "usemtl") {
 			std::string materialName;
 			ss >> materialName;
-			// Assuming one material per mesh for simplicity
 			textures = materialTextures[materialName];
 		}
 		else if (prefix == "f") {
-			// Parse face
+			for (int i = 0; i < 3; i++) {
+				unsigned int vIdx, vtIdx, vnIdx;
+				char slash;
+				ss >> vIdx >> slash >> vtIdx >> slash >> vnIdx;
+				vIdx--; vtIdx--; vnIdx--;
+				Vertex vertex = {
+					positions[vIdx], // Position
+					normals[vnIdx], // Normal
+					texCoords[vtIdx] // Texture Coordinate
+				};
+				vertices.push_back(vertex);
+				indices.push_back(static_cast<unsigned int>(vertices.size() - 1));
+			}
 		}
 	}
 
-	// Add the last mesh
 	if (!vertices.empty()) {
-		meshes->emplace_back(vertices, indices, textures);
+		meshes.emplace_back(Mesh(vertices, indices, textures));
+	}
+
+	std::cout << "Load success!\n";
+}
+
+void Model::ParseFace(const std::string & vertex, std::vector<unsigned int>&indices)
+{
+	std::stringstream ss(vertex);
+	std::string index;
+	while (getline(ss, index, '/')) {
+		if (!index.empty()) {
+			indices.push_back(std::stoi(index) - 1);  // Convert to zero-based index
+		}
 	}
 }
 
 std::unordered_map<std::string, std::vector<Texture>> Model::LoadMTL(const std::string& mtlFilePath) 
 {
-	std::unordered_map<std::string, std::vector<Texture>> materialTextures;
+	std::unordered_map<std::string, std::vector<Texture>> materials;
 	std::ifstream file(mtlFilePath);
-	std::string line, key, materialName;
-	Texture texture;
+	std::string line;
+	std::string currentMaterialName;
+	std::vector<Texture> currentTextures;
+
+	// Extract directory path from MTL file path
+	std::string directory = mtlFilePath.substr(0, mtlFilePath.find_last_of("\\/") + 1);
+
+	if (!file.is_open()) {
+		throw std::runtime_error("Failed to open MTL file: " + mtlFilePath);
+	}
 
 	while (getline(file, line)) {
 		std::stringstream ss(line);
+		std::string key;
 		ss >> key;
 		if (key == "newmtl") {
-			if (!materialName.empty()) {
-				materialTextures[materialName].push_back(texture);
+			if (!currentMaterialName.empty()) {
+				materials[currentMaterialName] = currentTextures; // Store previous material's textures
+				currentTextures.clear();
 			}
-			ss >> materialName;
-			texture = Texture();
+			ss >> currentMaterialName; // Update current material name
 		}
-		else if (key == "map_Kd" || key == "map_Ka" || key == "map_Ks") {
+		else if (key == "map_Kd" || key == "map_Ks" || key == "map_Ka" || key == "map_Bump") {
+			Texture texture;
 			std::string filepath;
 			ss >> filepath;
+			// Construct full path by appending directory to the texture filename
+			filepath = directory + filepath;
+            // Map the MTL file keys to standard texture types
+            if (key == "map_Ka") {
+                texture.type = "texture_ambient";
+            } else if (key == "map_Kd") {
+                texture.type = "texture_diffuse";
+            } else if (key == "map_Ks") {
+                texture.type = "texture_specular";
+			} else if (key == "map_Bump") {
+				texture.type = "texture_height";
+			}
 			texture.filepath = filepath;
-			texture.id = LoadTexture(filepath);
-			texture.type = key;
+			texture.id = LoadTexture(filepath); // Load texture and get ID
+			currentTextures.push_back(texture);
 		}
 	}
-	if (!materialName.empty()) {
-		materialTextures[materialName].push_back(texture);
+
+	if (!currentMaterialName.empty()) {
+		materials[currentMaterialName] = currentTextures; // Store the last material's textures
 	}
-	return materialTextures;
+
+	return materials;
 }
 
 static unsigned int LoadTexture(const std::string& path, bool isHDR)
@@ -209,7 +250,7 @@ static unsigned int LoadTexture(const std::string& path, bool isHDR)
 			glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		if (!isHDR)

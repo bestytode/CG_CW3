@@ -175,6 +175,8 @@
     <None Include="res\models\rock\rock.mtl" />
     <None Include="res\shaders\debug_light.fs" />
     <None Include="res\shaders\debug_light.vs" />
+    <None Include="res\shaders\debug_model.fs" />
+    <None Include="res\shaders\debug_model.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\models\backpack\ao.jpg" />

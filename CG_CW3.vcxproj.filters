@@ -67,6 +67,8 @@
     <None Include="res\models\nanosuit\nanosuit.mtl" />
     <None Include="res\models\planet\planet.mtl" />
     <None Include="res\models\rock\rock.mtl" />
+    <None Include="res\shaders\debug_model.vs" />
+    <None Include="res\shaders\debug_model.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\models\backpack\ao.jpg">

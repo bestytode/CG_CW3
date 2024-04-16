@@ -87,7 +87,8 @@ int main()
 
 
 	// shader configs
-	Shader shader("res/shaders/debug_light.vs", "res/shaders/debug_light.fs");
+	Shader debug_light_shader("res/shaders/debug_light.vs", "res/shaders/debug_light.fs");
+	Shader debug_model_shader("res/shaders/debug_model.vs", "res/shaders/debug_model.fs");
 
 	// Imgui configs
 	// ----------------
@@ -101,10 +102,11 @@ int main()
 
 
 
-
-	Model model = Model("ass");
-	//int a = model.GetMeshNumbers("res/models/nanosuit/nanosuit.obj");
-	int a = model.GetMeshNumbers("res/models/backpack/backpack.obj");
+	// load model
+	Model nanosuit("res/models/nanosuit/nanosuit.obj");
+	
+	Model rock("res/models/rock/rock.obj");
+	Model backpack("res/models/backpack/backpack.obj");
 
 	// Render loop
 	while (!glfwWindowShouldClose(scene_manager.GetWindow())) {
@@ -115,37 +117,44 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// test rendering cones
-		shader.Bind();
+		//// test rendering cones
+		//shader.Bind();
 		glm::mat4 projection = glm::perspective(glm::radians(camera->fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera->GetViewMatrix();
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.5f));
-		shader.SetMat4("projection", projection);
-		shader.SetMat4("view", view);
-		shader.SetMat4("model", model);
-		shader.SetInt("use_orange_color", 1);
-		shader.SetInt("use_red_color", 0);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINE_STRIP, 0, bezierCurvePoints.size());
-		glBindVertexArray(0);
+		//model = glm::scale(model, glm::vec3(0.5f));
+		//shader.SetMat4("projection", projection);
+		//shader.SetMat4("view", view);
+		//shader.SetMat4("model", model);
+		//shader.SetInt("use_orange_color", 1);
+		//shader.SetInt("use_red_color", 0);
+		//glBindVertexArray(VAO);
+		//glDrawArrays(GL_LINE_STRIP, 0, bezierCurvePoints.size());
+		//glBindVertexArray(0);
 
-		glPointSize(10.0f);
-		shader.SetInt("use_orange_color", 0);
-		shader.SetInt("use_red_color", 1);
-		glBindVertexArray(pointsVAO);
-		glDrawArrays(GL_POINTS, 0, 4);
-		glBindVertexArray(0);
+		//glPointSize(10.0f);
+		//shader.SetInt("use_orange_color", 0);
+		//shader.SetInt("use_red_color", 1);
+		//glBindVertexArray(pointsVAO);
+		//glDrawArrays(GL_POINTS, 0, 4);
+		//glBindVertexArray(0);
 
-		if (firstTimeOutputPosition) {
-			for (size_t i = 0; i < controlPoints.size(); i++) {
-				std::cout << "control points: " << controlPoints[i].x << " " << controlPoints[i].y << " " << controlPoints[i].z << std::endl;
-			}
-			firstTimeOutputPosition = false;
-		}
+		//if (firstTimeOutputPosition) {
+		//	for (size_t i = 0; i < controlPoints.size(); i++) {
+		//		std::cout << "control points: " << controlPoints[i].x << " " << controlPoints[i].y << " " << controlPoints[i].z << std::endl;
+		//	}
+		//	firstTimeOutputPosition = false;
+		//}
+		debug_model_shader.Bind();
+		debug_model_shader.SetMat4("projection", projection);
+		debug_model_shader.SetMat4("view", view);
+		debug_model_shader.SetMat4("model", model);
+		backpack.Render(debug_model_shader, {"texture_diffuse"});
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(scene_manager.GetWindow());
 		glfwPollEvents();
 	}
+
+	glfwTerminate();
 }

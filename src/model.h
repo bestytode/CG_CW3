@@ -47,7 +47,8 @@ public:
 			meshes[i].Render(shader, textureTypeToUse);
 	}
 	
-public:
+	std::vector<Mesh>& GetMesh() { return this->meshes; }
+private:
 	/**
 	 * Loads an OBJ file and constructs meshes from it.
 	 * Each 'o' line in the OBJ file starts a new mesh.
@@ -65,8 +66,6 @@ public:
 	 * @return A map from material names to their corresponding textures.
 	 */
 	std::unordered_map<std::string, std::vector<Texture>> LoadMTL(const std::string& mtlFilePath);
-
-	void ParseFace(const std::string& vertex, std::vector<unsigned int>& indices);
 
 private:
 	//std::vector<Mesh>* meshes;
@@ -146,18 +145,9 @@ void Model::LoadOBJ(const std::string& objFilePath)
 		meshes.emplace_back(Mesh(vertices, indices, textures));
 	}
 
-	std::cout << "Load success!\n";
-}
-
-void Model::ParseFace(const std::string & vertex, std::vector<unsigned int>&indices)
-{
-	std::stringstream ss(vertex);
-	std::string index;
-	while (getline(ss, index, '/')) {
-		if (!index.empty()) {
-			indices.push_back(std::stoi(index) - 1);  // Convert to zero-based index
-		}
-	}
+#ifdef _DEBUG
+	std::cout << "Load model success!\n";
+#endif
 }
 
 std::unordered_map<std::string, std::vector<Texture>> Model::LoadMTL(const std::string& mtlFilePath) 

@@ -166,7 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\gl3w\src\gl3w.c" />
-    <ClCompile Include="src\test_main.cpp" />
+    <ClCompile Include="src\SSAO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\backpack\backpack.mtl" />
@@ -177,6 +177,25 @@
     <None Include="res\shaders\debug_light.vs" />
     <None Include="res\shaders\debug_model.fs" />
     <None Include="res\shaders\debug_model.vs" />
+    <None Include="res\shaders\deferred_light_box.fs" />
+    <None Include="res\shaders\deferred_light_box.vs" />
+    <None Include="res\shaders\instancing_mars.fs" />
+    <None Include="res\shaders\instancing_mars.vs" />
+    <None Include="res\shaders\instancing_rock.fs" />
+    <None Include="res\shaders\instancing_rock.vs" />
+    <None Include="res\shaders\pbr_ibl.vert" />
+    <None Include="res\shaders\pbr_lighting_textured.frag" />
+    <None Include="res\shaders\point_shadow.fs" />
+    <None Include="res\shaders\point_shadow.vs" />
+    <None Include="res\shaders\point_shadow_depth.fs" />
+    <None Include="res\shaders\point_shadow_depth.gs" />
+    <None Include="res\shaders\point_shadow_depth.vs" />
+    <None Include="res\shaders\ssao.fs" />
+    <None Include="res\shaders\ssao.vs" />
+    <None Include="res\shaders\ssao_blur.fs" />
+    <None Include="res\shaders\ssao_geometry.fs" />
+    <None Include="res\shaders\ssao_geometry.vs" />
+    <None Include="res\shaders\ssao_lighting.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\models\backpack\ao.jpg" />

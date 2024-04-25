@@ -12,13 +12,27 @@
 #include "shader.h"
 #include "timer.h"
 #include "model.h"
+#include "light.h"
 
 static constexpr int SCR_WIDTH = 1920;  // Screen width
 static constexpr int SCR_HEIGHT = 1080; // Screen height
 
-static unsigned int amount = 5000; // total amount of rocks
+static unsigned int instancingBuffer = 0; // instancing buffer id
+static unsigned int amount = 1000; // total amount of rocks
 static float radius = 50.0f; // belt radius around mars
-static float offset = 5.0f;	 // control the random displacement of each rock, choose a rational range to minimize rock collisions.
+static float offset = 3.0f;	 // control the random displacement of each rock, choose a rational range to minimize rock collisions.
+static float asteroidScale = 2.0f;	 // control the random displacement of each rock, choose a rational range to minimize rock collisions.
+
+// PBR material textures id, set to 0 for safety
+static unsigned int albedo = 0, normal = 0, metallic = 0, roughness = 0, ao = 0;
+static float metallicScale = 1.0f; // Scale factor for metallic
+static float roughnessScale = 1.0f; // Scale factor for roughness
+static glm::vec3 albedoScale(1.0f, 1.0f, 1.0f); // Scale factor for albedo
+
+void initModelMatricesAndRotationSpeeds(glm::mat4* modelMatrices, glm::vec3* rotationAxis, float* rotationSpeeds);
+void setupInstancingBuffer(unsigned int& instancingBuffer, glm::mat4* modelMatrices, const Model& rock);
+void setupPBRproperties(Shader& pbrShader, unsigned int& albedo, unsigned int& normal, unsigned int& metallic, unsigned int& roughness, unsigned int& ao);
+void renderPBRmars(Shader& pbrShader, yzh::Sphere& sphere, glm::mat4& modelMatrix);
 
 int main()
 {
@@ -29,7 +43,7 @@ int main()
 
 	// shared pointer holding camera object. plane_near to 0.1f and plane_far to 100.0f by deault.
 	// Camera initial position:(0.0f, 0.0f, 100.0f), initial direction: -z
-	std::shared_ptr<Camera> camera = std::make_shared<Camera>(0.0f, 5.0f, 75.0f);
+	std::shared_ptr<Camera> camera = std::make_shared<Camera>(0.0f, 5.0f, 10.0f);
 
 	// Global scene manager holding window and camera object instance with utility functions.
 	// Notice: glfw and glw3 init in SceneManager constructor.
@@ -39,90 +53,41 @@ int main()
 	// OpenGL global configs
     // ---------------------
 	scene_manager.Enable(GL_DEPTH_TEST);
+	//scene_manager.Enable(GL_CULL_FACE);
 
 	// Load model(s)
 	Model rock("res/models/rock/rock.obj");
 	Model mars("res/models/planet/planet.obj");
 
+	// Set VAO for geometry shape for later use
+    //yzh::Quad quad;
+    //yzh::Cube cube;
+	yzh::Sphere sphere(64, 64);
+
 	// Build & compile shader(s)
 	Shader marsShader("res/shaders/instancing_mars.vs", "res/shaders/instancing_mars.fs");
 	Shader rockShader("res/shaders/instancing_rock.vs", "res/shaders/instancing_rock.fs");
+	Shader pbrShader("res/shaders/pbr_ibl.vert", "res/shaders/pbr_lighting_textured.frag");
 
-	// Generate a large list of semi-random model transformation matrices
-	glm::mat4* modelMatrices = new glm::mat4[amount]; // the actual data storing the model matrices
-	glm::vec3* axis = new glm::vec3[amount]; // Stores the rotation axis for each rock instance
-
-	std::random_device rd;
-	std::mt19937 gen(rd()); // Initialize Mersenne Twister random number generator
-	std::uniform_real_distribution<float> dis(-1.0, 1.0);
-	std::uniform_real_distribution<float> scaleDis(0.05, 0.2);
-	std::uniform_real_distribution<float> angleDis(0.0, 360.0);
-	std::uniform_real_distribution<float> axisDis(0.0, 1.0);
-
-	// Loop to initialize each rock's model matrix
-	// Notice: reversed order here
-	for (size_t i = 0; i < amount; i++) {
-		glm::mat4 model = glm::mat4(1.0f);
-
-		// 3. Translation: Displace each rock along a circle with a radius and a random offset
-		float angle = (float)(i) / (float)(amount) * 360.0f;
-		float x = sin(angle) * radius + dis(gen) * offset;
-		float y = 0.6 * dis(gen) * offset;
-		float z = cos(angle) * radius + dis(gen) * offset;
-		model = glm::translate(model, glm::vec3(+x, +y, +z));
-
-		// 2. Scaling: Randomly scale each rock
-		float scale = scaleDis(gen);
-		model = glm::scale(model, glm::vec3(scale));
-
-		// 1. Rotation: Apply a random initial rotation around a random axis
-		float rotAngle = angleDis(gen);
-		glm::vec3 randomAxis(axisDis(gen), axisDis(gen), axisDis(gen));
-		model = glm::rotate(model, glm::radians(rotAngle), randomAxis);
-		axis[i] = randomAxis; // Store this axis for later use
-
-		// 4. Store the model matrix
-		modelMatrices[i] = model;
-	}
-
-	// Generate a random rotation speed array for rocks
+	// model matrices, 
+	glm::mat4* modelMatrices = new glm::mat4[amount];
+	glm::vec3* rotationAxis = new glm::vec3[amount];
 	float* rotationSpeeds = new float[amount];
-	std::uniform_real_distribution<float>angleDistribution(4.0f, 8.0f);
-	for (size_t i = 0; i < amount; i++)
-		rotationSpeeds[i] = angleDistribution(gen);  // Random rotation speed
 
-	// configure instanced array
-	unsigned int instancingBuffer;
-	glGenBuffers(1, &instancingBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, instancingBuffer);
-	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0][0], GL_STATIC_DRAW);
+	// Initialize matrices and speeds
+	initModelMatricesAndRotationSpeeds(modelMatrices, rotationAxis, rotationSpeeds);
 
-	// Loop through each mesh in the rock model
-	for (unsigned int i = 0; i < rock.GetMesh().size(); i++) {
-		// Bind the VAO of the current mesh
-		unsigned int VAO = rock.GetMesh()[i].GetVAO();
-		glBindVertexArray(VAO);
+	// set up instancing buffer
+	setupInstancingBuffer(instancingBuffer, modelMatrices, rock);
 
-		// Enable and set vertex attributes for the model matrix.
-		// A mat4 is treated as an array of 4 vec4s.
-		for (int j = 0; j < 4; j++) {
-			// Enable the vertex attribute at location 3 + j
-			glEnableVertexAttribArray(3 + j);
 
-			// Specify how the data for that attribute is retrieved from the array
-			glVertexAttribPointer(3 + j, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * j));
-
-			// Set the attribute divisor to 1 to update the attribute once per instance
-			glVertexAttribDivisor(3 + j, 1);
-		}
-
-		glBindVertexArray(0);
-	}
+	setupPBRproperties(pbrShader, albedo, normal, metallic, roughness, ao);
 
 #ifdef DEBUG
 	timer.stop();
 #endif 
 
+	// Main render loop
 	while (!glfwWindowShouldClose(scene_manager.GetWindow())) {
 		scene_manager.UpdateDeltaTime();
 		scene_manager.ProcessInput();
@@ -131,35 +96,38 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Update the rotation of each rock around its own random axis at a random speed.
-		// Using deltaTime to ensure frame-rate independent rotation
-		for (unsigned int i = 0; i < amount; i++) {
-			glm::mat4 model = modelMatrices[i];
-
-			// Rotate around the rock's own axis
-			float angle = rotationSpeeds[i] * scene_manager.GetDeltaTime();
-			model = glm::rotate(model, angle, axis[i]); // random angle & random axis
-			modelMatrices[i] = model;
-		}
-		// Update the buffer with the new transformations
-		glBindBuffer(GL_ARRAY_BUFFER, instancingBuffer);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, amount * sizeof(glm::mat4), &modelMatrices[0][0]);
-
 		// Configure transformation matrices
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
 		glm::mat4 view = camera->GetViewMatrix();
 		glm::mat4 model = glm::mat4(1.0f);
 
 		// Draw planet(mars)
-		marsShader.Bind();
-		marsShader.SetMat4("projection", projection);
-		marsShader.SetMat4("view", view);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(4.0f));
-		marsShader.SetMat4("model", model);
-		mars.Render(marsShader);
+		// -----------------
+		model = glm::scale(model, glm::vec3(0.5f));
+		pbrShader.Bind();
+		pbrShader.SetMat4("projection", projection); // projection matrix
+		pbrShader.SetMat4("view", view); // view matrix
+		pbrShader.SetMat4("model", model);
+		pbrShader.SetVec3("viewPos", camera->position); // view(eye) position
+		renderPBRmars(pbrShader, sphere, model);
+
+		// Update the rotation of each rock around its own random axis at a random speed.
+		// Using deltaTime to ensure frame-rate independent rotation
+		// ---------------------------------------------------------
+		for (unsigned int i = 0; i < amount; i++) {
+			glm::mat4 model = modelMatrices[i];
+
+			// Rotate around the rock's own axis
+			float angle = rotationSpeeds[i] * scene_manager.GetDeltaTime();
+			model = glm::rotate(model, angle, rotationAxis[i]); // random angle & random axis
+			modelMatrices[i] = model;
+		}
+		// Update the buffer with the new transformations
+		glBindBuffer(GL_ARRAY_BUFFER, instancingBuffer);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, amount * sizeof(glm::mat4), &modelMatrices[0][0]);
 
 		// Draw amount of rocks
+		// --------------------
 		rockShader.Bind();
 		rockShader.SetMat4("projection", projection);
 		rockShader.SetMat4("view", view);
@@ -180,7 +148,100 @@ int main()
 	}
 
 	delete[] modelMatrices;
-	delete[] axis;
+	delete[] rotationAxis;
 	delete[] rotationSpeeds;
 	glfwTerminate();
+}
+
+void initModelMatricesAndRotationSpeeds(glm::mat4* modelMatrices, glm::vec3* rotationAxis, float* rotationSpeeds) 
+{
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(-1.0, 1.0);
+	std::uniform_real_distribution<float> scaleDis(0.05, 0.2);
+	std::uniform_real_distribution<float> angleDis(0.0, 360.0);
+	std::uniform_real_distribution<float> axisDis(0.0, 1.0);
+	std::uniform_real_distribution<float> angleDistribution(4.0f, 8.0f);
+
+	for (size_t i = 0; i < amount; i++) {
+		// Calculate transformation
+		float angle = static_cast<float>(i) / static_cast<float>(amount) * 360.0f;
+		float x = sin(angle) * radius + dis(gen) * offset;
+		float y = 0.6 * dis(gen) * offset;
+		float z = cos(angle) * radius + dis(gen) * offset;
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+		float scale = scaleDis(gen) * asteroidScale;
+		model = glm::scale(model, glm::vec3(scale));
+		float rotAngle = angleDis(gen);
+		glm::vec3 randomAxis(axisDis(gen), axisDis(gen), axisDis(gen));
+		model = glm::rotate(model, glm::radians(rotAngle), randomAxis);
+
+		// Store the transformations
+		rotationAxis[i] = randomAxis;
+		modelMatrices[i] = model;
+		rotationSpeeds[i] = angleDistribution(gen);  // Set rotation speed
+	}
+}
+
+void setupInstancingBuffer(unsigned int& instancingBuffer, glm::mat4* modelMatrices, const Model& rock) 
+{
+	// Generate and bind the instancing buffer
+	glGenBuffers(1, &instancingBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, instancingBuffer);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), modelMatrices, GL_STATIC_DRAW);
+
+	// Set up vertex attributes for each mesh in the rock model
+	for (unsigned int i = 0; i < rock.GetMesh().size(); i++) {
+		unsigned int VAO = rock.GetMesh()[i].GetVAO();
+		glBindVertexArray(VAO);
+
+		// Define attributes for the model matrix
+		for (int j = 0; j < 4; j++) {
+			glEnableVertexAttribArray(3 + j);
+			glVertexAttribPointer(3 + j, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4) * j));
+			glVertexAttribDivisor(3 + j, 1);
+		}
+
+		glBindVertexArray(0);  // Unbind the VAO
+	}
+}
+
+void setupPBRproperties(Shader& pbrShader, unsigned int& albedo, unsigned int& normal, unsigned int& metallic, unsigned int& roughness, unsigned int& ao)
+{
+	albedo = LoadTexture("res/textures/pbr/rusted_iron/albedo.png");
+	normal = LoadTexture("res/textures/pbr/rusted_iron/normal.png");
+	metallic = LoadTexture("res/textures/pbr/rusted_iron/metallic.png");
+	roughness = LoadTexture("res/textures/pbr/rusted_iron/roughness.png");
+	ao = LoadTexture("res/textures/pbr/rusted_iron/ao.png");
+
+	pbrShader.Bind();
+	pbrShader.SetInt("albedoMap", 0);
+	pbrShader.SetInt("normalMap", 1);
+	pbrShader.SetInt("metallicMap", 2);
+	pbrShader.SetInt("roughnessMap", 3);
+	pbrShader.SetInt("aoMap", 4);
+}
+
+void renderPBRmars(Shader& pbrShader, yzh::Sphere& sphere, glm::mat4& modelMatrix)
+{
+	pbrShader.SetVec3("lightColor", lightColor); // lighting info
+	pbrShader.SetVec3("lightPosition", lightPosition); // lighting info
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, albedo);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, normal);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, metallic);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, roughness);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, ao);
+
+	// Scaling factors
+	pbrShader.SetFloat("roughnessScale", roughnessScale);
+	pbrShader.SetFloat("metallicScale", metallicScale);
+	pbrShader.SetVec3("albedoScale", albedoScale);
+	pbrShader.SetMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(modelMatrix))));
+	sphere.Render();
 }

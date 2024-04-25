@@ -51,12 +51,15 @@
     <ClInclude Include="src\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\gl3w\src\gl3w.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SSAO.cpp">
+    <ClCompile Include="src\instancing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

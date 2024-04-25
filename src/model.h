@@ -48,6 +48,7 @@ public:
 	}
 	
 	std::vector<Mesh>& GetMesh() { return this->meshes; }
+	const std::vector<Mesh>& GetMesh() const { return this->meshes; }
 private:
 	/**
 	 * Loads an OBJ file and constructs meshes from it.

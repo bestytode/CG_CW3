@@ -157,6 +157,7 @@
     <ClInclude Include="dependencies\glm-master\glm\gtc\random.hpp" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\geometry_renderers.h" />
+    <ClInclude Include="src\light.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />
     <ClInclude Include="src\scene_manager.h" />
@@ -166,7 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\gl3w\src\gl3w.c" />
-    <ClCompile Include="src\SSAO.cpp" />
+    <ClCompile Include="src\instancing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\backpack\backpack.mtl" />

@@ -24,7 +24,7 @@ struct Vertex
 struct Texture
 {
 	std::string type; // e.g., texture_diffuse, texture_specular
-	unsigned int id;  // the texture id holding by opengl
+	unsigned int id = 0;  // the texture id holding by opengl
 	std::string filepath; 
 };
 
@@ -199,6 +199,6 @@ void Mesh::Render(Shader& shader, const std::vector<std::string>& textureTypesTo
 
 	// Draw mesh
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

@@ -4,6 +4,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+static const float moveSpeed = 5.0f;  // The speed at which the camera moves, influenced by keyboard inputs
+static const float mouseSensitivity = 0.1f; // Sensitivity of mouse input for camera orientation
+static const float minFov = 5.0f;
+static const float maxFov = 45.0f;
+static const float minPitch = -89.0f;
+static const float maxPitch = 89.0f;
+static const glm::vec3 defaultCameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+static const glm::vec3 defaultCameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+static const glm::vec3 defaultCameraWorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 enum Direction
 {
     FORWARD,  // W
@@ -23,14 +33,14 @@ class Camera
 {
 public:
 	Camera(float _x, float _y, float _z)
-		: position(glm::vec3(_x, _y, _z)), direction(glm::vec3(0.0f, 0.0f, -1.0f)), up(glm::vec3(0.0f, 1.0f, 0.0f))
+		: position(glm::vec3(_x, _y, _z)), direction(defaultCameraDirection), up(defaultCameraWorldUp)
 	{
 		right = glm::normalize(glm::cross(direction, worldUp));
 		UpdateCameraVectors();
 	}
 
-	Camera(glm::vec3 _position = glm::vec3(0.0f, 0.0f, 3.0f))
-		: position(_position), direction(glm::vec3(0.0f, 0.0f, -1.0f)), up(glm::vec3(0.0f, 1.0f, 0.0f))
+	Camera(glm::vec3 _position = defaultCameraPosition)
+		: position(_position), direction(defaultCameraDirection), up(defaultCameraWorldUp)
 	{
 		right = glm::normalize(glm::cross(direction, worldUp));
 		UpdateCameraVectors();
@@ -56,10 +66,10 @@ public:
         return glm::lookAt(position, position + direction, up);
     }
 
-	float GetMovementSpeed() const { return movementSpeed; }
-	float GetMouseSensitivity() const { return mouseSensitivity; }
-	void SetMovementSpeed(float newSpeed) { movementSpeed = newSpeed; }
-	void SetMouseSensitivity(float newSensitivity) { mouseSensitivity = newSensitivity; }
+	//float GetMovementSpeed() const { return movementSpeed; }
+	//float GetMouseSensitivity() const { return mouseSensitivity; }
+	//void SetMovementSpeed(float newSpeed) { movementSpeed = newSpeed; }
+	//void SetMouseSensitivity(float newSensitivity) { mouseSensitivity = newSensitivity; }
 
 private:
     // calculates the front vector from the Camera's (updated) Euler Angles
@@ -80,14 +90,12 @@ private:
     float yaw = -90.0f;   // Yaw is the angle between the positive x-axis and the projection of the point onto the xy-plane. Measured in degrees.
     float pitch = 0.0f; // Pitch is the angle between the positive z-axis and the line from the origin to the point. Measured in degrees.
 
-    // Camera options
-    float movementSpeed = 2.5f;  // The speed at which the camera moves, influenced by keyboard inputs
-    float mouseSensitivity = 0.1f; // Sensitivity of mouse input for camera orientation
+
 };
 
 void Camera::ProcessKeyboard(Direction _direction, float deltaTime)
 {
-	float velocity = movementSpeed * deltaTime;
+	float velocity = moveSpeed * deltaTime;
 
 	if (_direction == FORWARD)
 		position += this->direction * velocity;
@@ -107,12 +115,8 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrain)
     pitch += yoffset;
 
     // make sure that when pitch is out of bounds
-    if (constrain) {
-        if (pitch > 89.0f)
-            pitch = 89.0f;
-        if (pitch < -89.0f)
-            pitch = -89.0f;
-    }
+    if (constrain) 
+        pitch = std::max(minPitch, std::min(pitch, maxPitch));  // More robust clamping
 
     // update Front, Right and Up Vectors
     UpdateCameraVectors();
@@ -120,11 +124,11 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrain)
 
 void Camera::ProcessMouseScroll(float yoffset)
 {
-    fov -= (float)yoffset;
-    if (fov < 1.0f)
-        fov = 1.0f;
-    if (fov > 45.0f)
-        fov = 45.0f;
+    fov -= yoffset;
+    if (fov <= minFov)
+        fov = minFov;
+    if (fov >= maxFov)
+        fov = maxFov;
 }
 
 void Camera::UpdateCameraVectors()

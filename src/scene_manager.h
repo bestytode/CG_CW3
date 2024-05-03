@@ -113,6 +113,15 @@ void SceneManager::InitWindow(int width, int height, const std::string& title)
 		std::cerr << e.what() << std::endl;
 		return;
 	}
+
+	std::cout << "Use the following keys to navigate the scene:\n";
+	std::cout << "W: Move forward\n";
+	std::cout << "S: Move backward\n";
+	std::cout << "A: Move left\n";
+	std::cout << "D: Move right\n";
+	std::cout << "Scroll to zoom in or out\n";
+	std::cout << "Hold left mouse button & move mouse to look around\n";
+	std::cout << "Press ESC to exit the program\n\n";
 }
 
 void SceneManager::UpdateDeltaTime() {

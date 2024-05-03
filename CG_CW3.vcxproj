@@ -167,7 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\gl3w\src\gl3w.c" />
-    <ClCompile Include="src\instancing.cpp" />
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\backpack\backpack.mtl" />
@@ -237,6 +237,12 @@
     <Image Include="res\models\nanosuit\leg_showroom_spec.png" />
     <Image Include="res\models\planet\mars.png" />
     <Image Include="res\models\rock\rock.png" />
+    <Image Include="res\textures\skybox\Back_Tex.png" />
+    <Image Include="res\textures\skybox\Down_Tex.png" />
+    <Image Include="res\textures\skybox\Front_Tex.png" />
+    <Image Include="res\textures\skybox\Left_Tex.png" />
+    <Image Include="res\textures\skybox\Right_Tex.png" />
+    <Image Include="res\textures\skybox\Up_Tex.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\models\backpack\source_attribution.txt" />

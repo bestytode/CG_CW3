@@ -53,7 +53,6 @@ int main()
 	// OpenGL global configs
     // ---------------------
 	scene_manager.Enable(GL_DEPTH_TEST);
-	//scene_manager.Enable(GL_CULL_FACE);
 
 	// Load model(s)
 	Model rock("res/models/rock/rock.obj");
@@ -69,7 +68,7 @@ int main()
 	Shader rockShader("res/shaders/instancing_rock.vs", "res/shaders/instancing_rock.fs");
 	Shader pbrShader("res/shaders/pbr_ibl.vert", "res/shaders/pbr_lighting_textured.frag");
 
-	// model matrices, 
+	// prepare model matrices for amount of rocks
 	glm::mat4* modelMatrices = new glm::mat4[amount];
 	glm::vec3* rotationAxis = new glm::vec3[amount];
 	float* rotationSpeeds = new float[amount];
@@ -80,7 +79,7 @@ int main()
 	// set up instancing buffer
 	setupInstancingBuffer(instancingBuffer, modelMatrices, rock);
 
-
+	// load textures for pbr rendering
 	setupPBRproperties(pbrShader, albedo, normal, metallic, roughness, ao);
 
 #ifdef DEBUG
@@ -101,8 +100,8 @@ int main()
 		glm::mat4 view = camera->GetViewMatrix();
 		glm::mat4 model = glm::mat4(1.0f);
 
-		// Draw planet(mars)
-		// -----------------
+		// 1. Draw planet(mars) with pbr
+		// -----------------------------
 		model = glm::scale(model, glm::vec3(0.5f));
 		pbrShader.Bind();
 		pbrShader.SetMat4("projection", projection); // projection matrix
@@ -126,8 +125,8 @@ int main()
 		glBindBuffer(GL_ARRAY_BUFFER, instancingBuffer);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, amount * sizeof(glm::mat4), &modelMatrices[0][0]);
 
-		// Draw amount of rocks
-		// --------------------
+		// 2. Draw amount of rocks
+		// -----------------------
 		rockShader.Bind();
 		rockShader.SetMat4("projection", projection);
 		rockShader.SetMat4("view", view);

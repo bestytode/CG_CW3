@@ -171,22 +171,14 @@ namespace yzh {
 					}
 				}
 
-				bool oddRow = false;
-				for (unsigned int y = 0; y < Y_SEGMENTS; ++y) {
-					if (!oddRow) {
-						// even rows: y == 0, y == 2; and so on 
-						for (unsigned int x = 0; x <= X_SEGMENTS; ++x) {
-							indices.push_back(y * (X_SEGMENTS + 1) + x);
-							indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+				// Generate indices
+				for (unsigned int y = 0; y < y_segments; ++y) {
+					if (y != 0 && y != y_segments - 1) {
+						for (unsigned int x = 0; x <= x_segments; ++x) {
+							indices.push_back(y * (x_segments + 1) + x);
+							indices.push_back((y + 1) * (x_segments + 1) + x);
 						}
 					}
-					else {
-						for (int x = X_SEGMENTS; x >= 0; --x) {
-							indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
-							indices.push_back(y * (X_SEGMENTS + 1) + x);
-						}
-					}
-					oddRow = !oddRow;
 				}
 
 				glBindVertexArray(this->VAO);

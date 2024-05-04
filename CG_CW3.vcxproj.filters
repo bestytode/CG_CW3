@@ -51,7 +51,13 @@
     <ClInclude Include="src\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\light.h">
+    <ClInclude Include="src\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PBR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\instancing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,10 +80,10 @@
     <None Include="res\shaders\debug_model.fs" />
     <None Include="res\shaders\pbr_ibl.vert" />
     <None Include="res\shaders\pbr_lighting_textured.frag" />
-    <None Include="res\shaders\instancing_mars.fs" />
-    <None Include="res\shaders\instancing_mars.vs" />
-    <None Include="res\shaders\instancing_rock.fs" />
-    <None Include="res\shaders\instancing_rock.vs" />
+    <None Include="res\shaders\instancing_mars.frag" />
+    <None Include="res\shaders\instancing_mars.vert" />
+    <None Include="res\shaders\instancing_rock.frag" />
+    <None Include="res\shaders\instancing_rock.vert" />
     <None Include="res\shaders\point_shadow.fs" />
     <None Include="res\shaders\point_shadow.vs" />
     <None Include="res\shaders\point_shadow_depth.fs" />

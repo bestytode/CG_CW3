@@ -1,7 +1,6 @@
 #version 330 core
 out vec4 FragColor;
 
-// will be false by default
 uniform bool use_red_color; 
 uniform bool use_blue_color; 
 uniform bool use_green_color;

@@ -6,6 +6,8 @@
 // Date: 2024/4/2
 
 #pragma once
+#ifndef MESH_H
+#define MESH_H
 
 #include <vector>
 #include <string>
@@ -202,3 +204,5 @@ void Mesh::Render(Shader& shader, const std::vector<std::string>& textureTypesTo
 	glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
+
+#endif // !MESH_H

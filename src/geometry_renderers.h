@@ -8,6 +8,8 @@
 // Date: 2023/09/17
 
 #pragma once
+#ifndef GEOMETRY_RENDERER
+#define GEOMETRY_RENDERER
 
 #include <vector>
 #include <cmath>
@@ -28,7 +30,7 @@ namespace yzh {
 		virtual float Volume() const { return 0.0f; }
 	};
 
-	// This class provides a cube using OpenGL with dimensions of 2 * 2 * 2 units
+	// This class provides a cube using OpenGL with dimensions of 1 * 1 * 1 units
 	// The cube's vertex attributes include position, normal, and texture coordinates.
 	// Note: This function does not use an Index Buffer Object (IBO).
 	class Cube: public GeometryShape
@@ -39,47 +41,47 @@ namespace yzh {
 			if (this->VAO == 0) {
 				float vertices[] = {
 					// Position           // Normal           // TexCoords
-					-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 
-					 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, 
-					 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f,      
-					 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, 
-					-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 
-					-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, 
+					-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -0.5f, 0.0f, 0.0f, 
+					 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -0.5f, 0.5f, 0.5f, 
+					 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -0.5f, 0.5f, 0.0f,      
+					 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -0.5f, 0.5f, 0.5f, 
+					-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -0.5f, 0.0f, 0.0f, 
+					-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -0.5f, 0.0f, 0.5f, 
 
-					-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, 
-					 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, 
-					 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, 
-					 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, 
-					-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 
-					-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, 
+					-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  0.5f, 0.0f, 0.0f, 
+					 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  0.5f, 0.5f, 0.0f, 
+					 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  0.5f, 0.5f, 0.5f, 
+					 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  0.5f, 0.5f, 0.5f, 
+					-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  0.5f, 0.0f, 0.5f, 
+					-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  0.5f, 0.0f, 0.0f, 
 
-					-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 
-					-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, 
-					-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
-					-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
-					-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 
-					-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 
+					-0.5f,  0.5f,  0.5f, -0.5f,  0.0f,  0.0f, 0.5f, 0.0f, 
+					-0.5f,  0.5f, -0.5f, -0.5f,  0.0f,  0.0f, 0.5f, 0.5f, 
+					-0.5f, -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 0.5f, 
+					-0.5f, -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 0.5f, 
+					-0.5f, -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 0.0f, 
+					-0.5f,  0.5f,  0.5f, -0.5f,  0.0f,  0.0f, 0.5f, 0.0f, 
 
-					 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 
-					 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
-					 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f,     
-					 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, 
-					 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 
-					 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f,   
+					 0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 0.5f, 0.0f, 
+					 0.5f, -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 0.5f, 
+					 0.5f,  0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 0.5f, 0.5f,     
+					 0.5f, -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 0.5f, 
+					 0.5f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 0.5f, 0.0f, 
+					 0.5f, -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 0.0f,   
 
-					 -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, 
-					  1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 
-					  1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, 
-					  1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, 
-					 -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, 
-					 -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, 
+					 -0.5f, -0.5f, -0.5f,  0.0f, -0.5f,  0.0f, 0.0f, 0.5f, 
+					  0.5f, -0.5f, -0.5f,  0.0f, -0.5f,  0.0f, 0.5f, 0.5f, 
+					  0.5f, -0.5f,  0.5f,  0.0f, -0.5f,  0.0f, 0.5f, 0.0f, 
+					  0.5f, -0.5f,  0.5f,  0.0f, -0.5f,  0.0f, 0.5f, 0.0f, 
+					 -0.5f, -0.5f,  0.5f,  0.0f, -0.5f,  0.0f, 0.0f, 0.0f, 
+					 -0.5f, -0.5f, -0.5f,  0.0f, -0.5f,  0.0f, 0.0f, 0.5f, 
 
-					 -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 
-					  1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
-					  1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,   
-					  1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, 
-					 -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 
-					 -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f      
+					 -0.5f,  0.5f, -0.5f,  0.0f,  0.5f,  0.0f, 0.0f, 0.5f, 
+					  0.5f,  0.5f , 0.5f,  0.0f,  0.5f,  0.0f, 0.5f, 0.0f,
+					  0.5f,  0.5f, -0.5f,  0.0f,  0.5f,  0.0f, 0.5f, 0.5f,   
+					  0.5f,  0.5f,  0.5f,  0.0f,  0.5f,  0.0f, 0.5f, 0.0f, 
+					 -0.5f,  0.5f, -0.5f,  0.0f,  0.5f,  0.0f, 0.0f, 0.5f, 
+					 -0.5f,  0.5f,  0.5f,  0.0f,  0.5f,  0.0f, 0.0f, 0.0f      
 				};
 
 				glGenVertexArrays(1, &this->VAO);
@@ -125,15 +127,15 @@ namespace yzh {
 		unsigned int VAO = 0, VBO = 0;
 	};
 
-	// This class provides a sphere in OpenGL with a radius of 2.0 units.
+	// This class provides a sphere in OpenGL with a radius of 1.0 units.
 	// Vertex attributes include position, normal, and texture coordinates.
 	// The sphere is detailed with 64 segments along both the X and Y axes, resulting in a highly detailed mesh.
 	// he function allows for customization of the sphere's detail level through x_segments and y_segments.
 	class Sphere: public GeometryShape
 	{
 	public:
-		Sphere(const unsigned int x_segments = 64,
-			const unsigned int y_segments = 64)
+		Sphere(unsigned int x_segments = 64,
+			unsigned int y_segments = 64)
 		{
 			// Ensure the process will only be excuted once
 			if (this->VAO == 0) {
@@ -144,14 +146,12 @@ namespace yzh {
 				std::vector<float> vertices;
 				std::vector<unsigned int> indices;
 
-				const unsigned int X_SEGMENTS = x_segments;
-				const unsigned int Y_SEGMENTS = y_segments;
 				const float PI = 3.14159265359f;
-				float radius = 2.0f;
-				for (unsigned int y = 0; y <= Y_SEGMENTS; ++y) {
-					for (unsigned int x = 0; x <= X_SEGMENTS; ++x) {
-						float xSegment = (float)x / (float)X_SEGMENTS;
-						float ySegment = (float)y / (float)Y_SEGMENTS;
+				float radius = 1.0f;
+				for (unsigned int y = 0; y <= y_segments; ++y) {
+					for (unsigned int x = 0; x <= x_segments; ++x) {
+						float xSegment = (float)x / (float)x_segments;
+						float ySegment = (float)y / (float)y_segments;
 
 						float xPos = radius * std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 						float yPos = radius * std::cos(ySegment * PI);
@@ -391,3 +391,5 @@ namespace yzh {
 		unsigned int VAO = 0, VBO = 0;
 	};
 };
+
+#endif // !GEOMETRY_RENDERER

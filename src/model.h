@@ -1,4 +1,6 @@
 #pragma once
+#ifndef MODEL_H
+#define MODEL_H
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -27,7 +29,7 @@
  * @param textureFilepath Path to the texture file.
  * @return OpenGL texture ID for the loaded texture.
  */
-static unsigned int LoadTexture(const std::string& path, bool isHDR = true);
+static unsigned int LoadTexture(const std::string& path, bool isHDR = false);
 
 class Model
 {
@@ -241,7 +243,7 @@ static unsigned int LoadTexture(const std::string& path, bool isHDR)
 			glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		if (!isHDR)
@@ -257,3 +259,5 @@ static unsigned int LoadTexture(const std::string& path, bool isHDR)
 
 	return textureID;
 }
+
+#endif // !MODEL_H

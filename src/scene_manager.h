@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef SCENE_MANAGER_H
+#define SCENE_MANAGER_H
+
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -274,3 +277,5 @@ void SceneManager::CheckFramebufferStatus(unsigned int fbo, const std::string& f
 		std::cout << "Framebuffer (" << framebufferName << ") with ID (" << fbo << ") is complete." << std::endl;
 	}
 }
+
+#endif // !SCENE_MANAGER_H

@@ -1,4 +1,6 @@
 #pragma once
+#ifndef SHADER_H
+#define SHADER_H
 
 #include <fstream>
 #include <iostream>
@@ -269,3 +271,5 @@ private:
 	unsigned int m_rendererID; // Unique identifier for the OpenGL shader program
 	std::unordered_set<std::string> warnedUniforms; // Set to keep track of uniform variables that have already triggered a warning
 };
+
+#endif // !SHADER_H

@@ -60,6 +60,12 @@
     <ClInclude Include="src\instancing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\bloom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\gl3w\src\gl3w.c">
@@ -78,25 +84,18 @@
     <None Include="res\models\rock\rock.mtl" />
     <None Include="res\shaders\debug_model.vs" />
     <None Include="res\shaders\debug_model.fs" />
-    <None Include="res\shaders\pbr_ibl.vert" />
-    <None Include="res\shaders\pbr_lighting_textured.frag" />
-    <None Include="res\shaders\instancing_mars.frag" />
-    <None Include="res\shaders\instancing_mars.vert" />
+    <None Include="res\shaders\pbr.vert" />
+    <None Include="res\shaders\pbr.frag" />
     <None Include="res\shaders\instancing_rock.frag" />
     <None Include="res\shaders\instancing_rock.vert" />
-    <None Include="res\shaders\point_shadow.fs" />
-    <None Include="res\shaders\point_shadow.vs" />
-    <None Include="res\shaders\point_shadow_depth.fs" />
-    <None Include="res\shaders\point_shadow_depth.gs" />
-    <None Include="res\shaders\point_shadow_depth.vs" />
     <None Include="res\shaders\ssao.fs" />
     <None Include="res\shaders\ssao.vs" />
     <None Include="res\shaders\ssao_blur.fs" />
     <None Include="res\shaders\ssao_geometry.fs" />
     <None Include="res\shaders\ssao_geometry.vs" />
     <None Include="res\shaders\ssao_lighting.fs" />
-    <None Include="res\shaders\deferred_light_box.fs" />
-    <None Include="res\shaders\deferred_light_box.vs" />
+    <None Include="res\shaders\skybox.vert" />
+    <None Include="res\shaders\skybox.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\models\backpack\ao.jpg">
@@ -213,22 +212,22 @@
     <Image Include="res\models\rock\rock.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\textures\skybox\Back_Tex.png">
+    <Image Include="res\textures\skybox\GalaxyTex_NegativeX.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\textures\skybox\Down_Tex.png">
+    <Image Include="res\textures\skybox\GalaxyTex_NegativeY.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\textures\skybox\Front_Tex.png">
+    <Image Include="res\textures\skybox\GalaxyTex_NegativeZ.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\textures\skybox\Left_Tex.png">
+    <Image Include="res\textures\skybox\GalaxyTex_PositiveX.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\textures\skybox\Right_Tex.png">
+    <Image Include="res\textures\skybox\GalaxyTex_PositiveY.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\textures\skybox\Up_Tex.png">
+    <Image Include="res\textures\skybox\GalaxyTex_PositiveZ.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

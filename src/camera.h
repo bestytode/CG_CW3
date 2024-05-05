@@ -1,4 +1,6 @@
 #pragma once
+#ifndef CAMERA_H
+#define CAMERA_H
 
 #include <GL/gl3w.h>
 #include <glm/glm.hpp>
@@ -144,3 +146,5 @@ void Camera::UpdateCameraVectors()
     this->right = glm::normalize(glm::cross(direction, worldUp));
     this->up = glm::normalize(glm::cross(right, direction));
 }
+
+#endif // !CAMERA_H

@@ -171,7 +171,7 @@ void Mesh::SetupMesh()
 void Mesh::Render(Shader& shader, const std::vector<std::string>& textureTypesToUse) const
 {
 	// Start from material.diffuse1 or material.specular1
-	size_t diffuseNr = 1, specularNr = 1, normalNr = 1, heightNr = 1;
+	size_t diffuseNr = 1, specularNr = 1, normalNr = 1, heightNr = 1, ambientNr = 1;
 
 	for (int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -193,6 +193,8 @@ void Mesh::Render(Shader& shader, const std::vector<std::string>& textureTypesTo
 			number = std::to_string(normalNr++);
 		else if (name == "texture_height")
 			number = std::to_string(heightNr++);
+		else if (name == "texture_ambient")
+			number = std::to_string(ambientNr++);
 
 		// can change this line based on the specific shader code
 		shader.SetInt((name + number).c_str(), i);

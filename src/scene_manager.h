@@ -16,6 +16,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 #include "camera.h"
+#include "config.h"
 
 // A utility class holding window pointer & camera object
 // 
@@ -72,6 +73,8 @@ public:
 	void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 	static void scroll_callback_dispatch(GLFWwindow* window, double xoffset, double yoffset);
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+	static void key_callback_dispatch(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void ProcessInput();
 
 	// Getter functions
@@ -107,6 +110,7 @@ void SceneManager::InitWindow(int width, int height, const std::string& title)
 		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback_dispatch);
 		glfwSetCursorPosCallback(window, mouse_callback_dispatch);
 		glfwSetScrollCallback(window, scroll_callback_dispatch);
+		glfwSetKeyCallback(window, key_callback_dispatch);
 
 		if (gl3wInit()) 
 			throw std::runtime_error("failed to init GL3W");
@@ -195,20 +199,88 @@ void SceneManager::scroll_callback(GLFWwindow* window, double xoffset, double yo
 	camera->ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
+void SceneManager::key_callback_dispatch(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	SceneManager* sceneManager = static_cast<SceneManager*>(glfwGetWindowUserPointer(window));
+	sceneManager->key_callback(window, key, scancode, action, mods);
+}
+
+void SceneManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) 
+{
+	if (action == GLFW_PRESS) {
+		switch (key) {
+		case GLFW_KEY_W:
+			moveForward = true;
+			break;
+		case GLFW_KEY_S:
+			moveBackward = true;
+			break;
+		case GLFW_KEY_A:
+			moveLeft = true;
+			break;
+		case GLFW_KEY_D:
+			moveRight = true;
+			break;
+		case GLFW_KEY_Q:
+			moveUp = true;
+			break;
+		case GLFW_KEY_E:
+			moveDown = true;
+			break;
+		}
+	}
+	else if (action == GLFW_RELEASE) {
+		switch (key) {
+		case GLFW_KEY_W:
+			moveForward = false;
+			break;
+		case GLFW_KEY_S:
+			moveBackward = false;
+			break;
+		case GLFW_KEY_A:
+			moveLeft = false;
+			break;
+		case GLFW_KEY_D:
+			moveRight = false;
+			break;
+		case GLFW_KEY_Q:
+			moveUp = false;
+			break;
+		case GLFW_KEY_E:
+			moveDown = false;
+			break;
+		}
+	}
+}
+
 // Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void SceneManager::ProcessInput()
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera->ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera->ProcessKeyboard(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera->ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera->ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+		toggleNanosuitMovement = !toggleNanosuitMovement;
+
+	if (!toggleNanosuitMovement) {
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			camera->ProcessKeyboard(FORWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			camera->ProcessKeyboard(BACKWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			camera->ProcessKeyboard(LEFT, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			camera->ProcessKeyboard(RIGHT, deltaTime);
+	}
+	// enable movement for nanosuit
+	else {
+		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) 
+			rotationAngle -= rotationDX;  // Rotate left
+		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+			rotationAngle = 0.0f; //reset
+		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) 
+			rotationAngle += rotationDX;  // Rotate right
+	}
 }
 
 // Utility function for loading a 2D texture from file

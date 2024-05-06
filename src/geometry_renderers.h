@@ -134,65 +134,62 @@ namespace yzh {
 	class Sphere: public GeometryShape
 	{
 	public:
-		Sphere(unsigned int x_segments = 64,
-			unsigned int y_segments = 64)
+		Sphere(const unsigned int x_segments = 64, const unsigned int y_segments = 64) 
 		{
-			// Ensure the process will only be excuted once
 			if (this->VAO == 0) {
-				glGenVertexArrays(1, &this->VAO);
-				glGenBuffers(1, &this->VBO);
-				glGenBuffers(1, &this->IBO);
-
-				std::vector<float> vertices;
-				std::vector<unsigned int> indices;
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+				glGenBuffers(1, &IBO);
 
 				const float PI = 3.14159265359f;
-				float radius = 1.0f;
+				std::vector<float> data;
+				data.reserve(x_segments * y_segments * 8); // x, y, z, nx, ny, nz, u, v
+
+				std::vector<unsigned int> indices;
+				indices.reserve(x_segments * y_segments * 6);
+
 				for (unsigned int y = 0; y <= y_segments; ++y) {
 					for (unsigned int x = 0; x <= x_segments; ++x) {
 						float xSegment = (float)x / (float)x_segments;
 						float ySegment = (float)y / (float)y_segments;
+						float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+						float yPos = std::cos(ySegment * PI);
+						float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 
-						float xPos = radius * std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-						float yPos = radius * std::cos(ySegment * PI);
-						float zPos = radius * std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-
-						// Normalizing the normal
-						float norm = std::sqrt(xPos * xPos + yPos * yPos + zPos * zPos);
-
-						vertices.push_back(xPos); // Position
-						vertices.push_back(yPos);
-						vertices.push_back(zPos);
-						vertices.push_back(xPos / norm); // Normal
-						vertices.push_back(yPos / norm);
-						vertices.push_back(zPos / norm);
-						vertices.push_back(xSegment); // UV coords
-						vertices.push_back(ySegment);
+						// Push position, normal and UVs directly into the data vector
+						data.push_back(xPos);
+						data.push_back(yPos);
+						data.push_back(zPos);
+						data.push_back(xPos);
+						data.push_back(yPos);
+						data.push_back(zPos);
+						data.push_back(xSegment);
+						data.push_back(ySegment);
 					}
 				}
 
-				// Generate indices
+				bool oddRow = false;
 				for (unsigned int y = 0; y < y_segments; ++y) {
-					if (y != 0 && y != y_segments - 1) {
-						for (unsigned int x = 0; x <= x_segments; ++x) {
-							indices.push_back(y * (x_segments + 1) + x);
-							indices.push_back((y + 1) * (x_segments + 1) + x);
-						}
+					for (unsigned int x = 0; x <= x_segments; ++x) {
+						indices.push_back(y * (x_segments + 1) + x);
+						indices.push_back((y + 1) * (x_segments + 1) + x);
 					}
 				}
 
-				glBindVertexArray(this->VAO);
-				glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-				glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
+				indexCount = (unsigned int)indices.size();
+
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
 				glEnableVertexAttribArray(0);
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 				glEnableVertexAttribArray(1);
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 				glEnableVertexAttribArray(2);
 				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-				glBindVertexArray(0);
 			}
 		}
 
@@ -214,7 +211,7 @@ namespace yzh {
 		{
 			if (this->VAO != 0) {
 				glBindVertexArray(this->VAO);
-				glDrawElements(GL_TRIANGLE_STRIP, (64 + 1) * 64 * 2, GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);				
 				glBindVertexArray(0);
 			}
 		}
@@ -223,6 +220,7 @@ namespace yzh {
 
 	private:
 		unsigned int VAO = 0, VBO = 0, IBO = 0;
+		unsigned int indexCount = 0;
 	};
 
 	// This class provides a 2D quad in OpenGL with dimensions of 2 * 2 units.

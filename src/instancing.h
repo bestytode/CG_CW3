@@ -65,7 +65,7 @@ void UpdateModelMatrices(float deltaTime)
 		glm::mat4 model = modelMatrices[i];
 
 		// Rotate around the rock's own axis
-		float angle = 0.5f * rotationSpeeds[i] * deltaTime;
+		float angle = rotationSpeeds[i] * deltaTime * rotationSpeedScale;
 		model = glm::rotate(model, angle, rotationAxis[i]); // random angle & random axis
 		modelMatrices[i] = model;
 	}

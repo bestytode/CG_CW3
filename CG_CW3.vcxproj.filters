@@ -54,7 +54,7 @@
     <ClInclude Include="src\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\PBR.h">
+    <ClInclude Include="src\pbr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\instancing.h">
@@ -82,18 +82,12 @@
     <None Include="res\models\nanosuit\nanosuit.mtl" />
     <None Include="res\models\planet\planet.mtl" />
     <None Include="res\models\rock\rock.mtl" />
-    <None Include="res\shaders\debug_model.vs" />
-    <None Include="res\shaders\debug_model.fs" />
+    <None Include="res\shaders\nanosuit.vert" />
+    <None Include="res\shaders\nanosuit.frag" />
     <None Include="res\shaders\pbr.vert" />
     <None Include="res\shaders\pbr.frag" />
     <None Include="res\shaders\instancing_rock.frag" />
     <None Include="res\shaders\instancing_rock.vert" />
-    <None Include="res\shaders\ssao.fs" />
-    <None Include="res\shaders\ssao.vs" />
-    <None Include="res\shaders\ssao_blur.fs" />
-    <None Include="res\shaders\ssao_geometry.fs" />
-    <None Include="res\shaders\ssao_geometry.vs" />
-    <None Include="res\shaders\ssao_lighting.fs" />
     <None Include="res\shaders\skybox.vert" />
     <None Include="res\shaders\skybox.frag" />
   </ItemGroup>

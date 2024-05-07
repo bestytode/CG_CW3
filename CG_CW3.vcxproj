@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\gl3w\include\GL\gl3w.h" />
+    <ClInclude Include="dependencies\gl3w\include\GL\glcorearb.h" />
     <ClInclude Include="dependencies\GLFW\GLFW\glfw3.h" />
     <ClInclude Include="dependencies\GLFW\GLFW\glfw3native.h" />
     <ClInclude Include="dependencies\glm-master\glm\gtc\random.hpp" />
@@ -171,6 +172,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\gl3w\src\gl3w.c" />
+    <ClCompile Include="dependencies\gl3w\src\glfw_test.c" />
+    <ClCompile Include="dependencies\gl3w\src\glut_test.c" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>

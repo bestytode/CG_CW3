@@ -90,6 +90,11 @@
     <None Include="res\shaders\instancing_rock.vert" />
     <None Include="res\shaders\skybox.vert" />
     <None Include="res\shaders\skybox.frag" />
+    <None Include="dependencies\gl3w\.gitignore" />
+    <None Include="dependencies\gl3w\gl3w_gen.py" />
+    <None Include="dependencies\gl3w\README.rst" />
+    <None Include="dependencies\gl3w\SConstruct" />
+    <None Include="dependencies\gl3w\UNLICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\models\backpack\ao.jpg">
@@ -224,9 +229,18 @@
     <Image Include="res\textures\skybox\GalaxyTex_PositiveZ.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="dependencies\gl3w\public-domain-mark.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\models\backpack\source_attribution.txt" />
     <Text Include="res\models\planet\source.txt" />
+    <Text Include="dependencies\gl3w\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="res\models\nanosuit\nanosuit.obj" />
+    <Object Include="res\models\planet\planet.obj" />
+    <Object Include="res\models\rock\rock.obj" />
   </ItemGroup>
 </Project>

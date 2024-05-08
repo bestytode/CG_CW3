@@ -207,48 +207,59 @@ void SceneManager::key_callback_dispatch(GLFWwindow* window, int key, int scanco
 
 void SceneManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 {
+	// Handle key press events
 	if (action == GLFW_PRESS) {
-		switch (key) {
-		case GLFW_KEY_W:
+		if (key == GLFW_KEY_W) {
 			moveForward = true;
-			break;
-		case GLFW_KEY_S:
+		}
+		if (key == GLFW_KEY_S) {
 			moveBackward = true;
-			break;
-		case GLFW_KEY_A:
+		}
+		if (key == GLFW_KEY_A) {
 			moveLeft = true;
-			break;
-		case GLFW_KEY_D:
+		}
+		if (key == GLFW_KEY_D) {
 			moveRight = true;
-			break;
-		case GLFW_KEY_Q:
+		}
+		if (key == GLFW_KEY_Q) {
 			moveUp = true;
-			break;
-		case GLFW_KEY_E:
+		}
+		if (key == GLFW_KEY_E) {
 			moveDown = true;
-			break;
+		}
+		// press space to switch camera/nanosuit moving
+		if (key == GLFW_KEY_SPACE) {
+			toggleNanosuitMovement = !toggleNanosuitMovement;
+		}
+		// prss
+		if (key == GLFW_KEY_B) {
+			enableNanosuitExplosion = !enableNanosuitExplosion;
+			startNanosuitExplosionTime = (float)glfwGetTime();
+		}   
+		// press v to enable/disable pbr model normal
+		if (key == GLFW_KEY_N) {
+			togglePBRNormal = !togglePBRNormal;
 		}
 	}
+	// Handle key release events
 	else if (action == GLFW_RELEASE) {
-		switch (key) {
-		case GLFW_KEY_W:
+		if (key == GLFW_KEY_W) {
 			moveForward = false;
-			break;
-		case GLFW_KEY_S:
+		}
+		if (key == GLFW_KEY_S) {
 			moveBackward = false;
-			break;
-		case GLFW_KEY_A:
+		}
+		if (key == GLFW_KEY_A) {
 			moveLeft = false;
-			break;
-		case GLFW_KEY_D:
+		}
+		if (key == GLFW_KEY_D) {
 			moveRight = false;
-			break;
-		case GLFW_KEY_Q:
+		}
+		if (key == GLFW_KEY_Q) {
 			moveUp = false;
-			break;
-		case GLFW_KEY_E:
+		}
+		if (key == GLFW_KEY_E) {
 			moveDown = false;
-			break;
 		}
 	}
 }
@@ -256,12 +267,11 @@ void SceneManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 // Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void SceneManager::ProcessInput()
 {
+	// Press escape to exit program
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
-		toggleNanosuitMovement = !toggleNanosuitMovement;
-
+	// if disable movement for nanosuit, enable movement for camera
 	if (!toggleNanosuitMovement) {
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			camera->ProcessKeyboard(FORWARD, deltaTime);
@@ -275,11 +285,11 @@ void SceneManager::ProcessInput()
 	// enable movement for nanosuit
 	else {
 		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) 
-			rotationAngle -= rotationDX;  // Rotate left
+			rotationAngle += rotationDX;  // Rotate left
 		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 			rotationAngle = 0.0f; //reset
 		if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) 
-			rotationAngle += rotationDX;  // Rotate right
+			rotationAngle -= rotationDX;  // Rotate right
 	}
 }
 

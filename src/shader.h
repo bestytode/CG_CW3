@@ -35,7 +35,7 @@ public:
 
 #ifdef _DEBUG
 		std::cout << "successfully create and compile shader: \n" << vertexShaderPath <<
-			"\n" << fragmentShaderPath << "\n" << geometryShaderPath;
+			"\n" << fragmentShaderPath << "\n" << geometryShaderPath << "\n";
 #endif 
 	}
 
@@ -261,7 +261,7 @@ private:
 
 		glDeleteShader(vs);
 		glDeleteShader(fs);
-		if (gs!=0)
+		if (gs)
 			glDeleteShader(gs);
 
 		return program;

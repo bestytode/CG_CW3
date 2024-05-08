@@ -47,6 +47,10 @@ float metallicScale = 1.0f;  // Scale factor for metallic
 float roughnessScale = 1.0f; // Scale factor for roughness
 glm::vec3 albedoScale(1.0f, 1.0f, 1.0f); // Scale factor for albedo
 
+bool togglePBRNormal = false;  // flag to enable geometry shader for planet
+float normal_magnitude = 0.4f; // scale factor for normal
+glm::vec3 normal_color = glm::vec3(1.0f, 1.0f, 0.0f); // normal color
+
 // Sky box infos
 // -------------
 unsigned int cubemapTexture = 0;
@@ -58,6 +62,7 @@ const float Ns = 96.0f;
 const float Ka = 0.02f;
 const float Kd = 0.64f;
 const float Ks = 0.5f;
+
 bool toggleNanosuitMovement = false; // notice: this will also disable camera movement when true
 bool moveForward = false;
 bool moveBackward = false;
@@ -67,6 +72,11 @@ bool moveUp = false;
 bool moveDown = false;
 float rotationAngle = 0.0f;
 float rotationDX = 0.01f; // infinitesimally small change
+
+bool enableNanosuitExplosion = false; // press b to switch
+float explosion_magnitude = 2.0f;
+float maxNanosuitExplosionDuration = 5.0f; // explosion max duration
+float startNanosuitExplosionTime = 0.0f;   // record start time for nanosuit explosion
 
 // Lighting infos
 // --------------

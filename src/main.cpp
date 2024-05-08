@@ -37,6 +37,8 @@ int main()
     // ---------------------
 	scene_manager.Enable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
+	scene_manager.Enable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Load model(s)
 	// -------------
@@ -48,14 +50,17 @@ int main()
     yzh::Quad quad;
     //yzh::Cube cube;
 	yzh::Sphere sphere;
+	yzh::Sphere pbrSphere;
 
 	// Build & compile shader(s)
 	// -------------------------
-	Shader rockShader("res/shaders/instancing_rock.vert", "res/shaders/instancing_rock.frag");
-	Shader planetPBRShader("res/shaders/pbr.vert", "res/shaders/pbr.frag");
-	Shader skyboxShader("res/shaders/skybox.vert", "res/shaders/skybox.frag");
-	Shader bloomShader("res/shaders/debug_light.vs", "res/shaders/debug_light.fs");
-	Shader nanosuitShader("res/shaders/nanosuit.vert", "res/shaders/nanosuit.frag");
+	Shader skyboxShader("res/shaders/skybox.vert", "res/shaders/skybox.frag"); // sky box shader, render 1st
+	Shader rockShader("res/shaders/instancing_rock.vert", "res/shaders/instancing_rock.frag"); // instancing rock shader, alpha 1.0f
+	Shader planetPBRShader("res/shaders/planet_pbr.vert", "res/shaders/planet_pbr.frag"); // PBR material planet, enable showing normal by pressing N
+	Shader bloomShader("res/shaders/debug_light.vert", "res/shaders/debug_light.frag"); // light source shader
+	Shader nanosuitShader("res/shaders/nanosuit.vert", "res/shaders/nanosuit.frag"); // nanosuit shader, enable explosion by pressing B
+	Shader geometryPBRShader("res/shaders/geometry_planet_pbr.vert", "res/shaders/geometry_planet_pbr.frag", "res/shaders/geometry_planet_pbr.geom"); 
+	Shader nanosuitExplosionShader("res/shaders/geometry_nanosuit.vert", "res/shaders/geometry_nanosuit.frag", "res/shaders/geometry_nanosuit.geom");
 
 	// Initialize matrices and speeds
 	InitModelMatricesAndRotationSpeeds(modelMatrices, rotationAxis, rotationSpeeds);
@@ -79,7 +84,7 @@ int main()
 	while (!glfwWindowShouldClose(scene_manager.GetWindow())) {
 		scene_manager.UpdateDeltaTime();
 		scene_manager.ProcessInput();
-		float time = (float)glfwGetTime();
+		float time = (float)glfwGetTime(); // current time
 		
 		// Render
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -103,16 +108,17 @@ int main()
 		skyboxShader.SetMat4("model", model);
 		RenderSkybox(skyboxShader);
 
-		//2. Draw planet(mars) with PBR
-		//-----------------------------
-		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(10.0f)); // radius 10.0f
+		// 2. Draw planet(mars) with PBR
+		// -----------------------------
+		glm::mat4 pbrModel = glm::mat4(1.0f);
+		pbrModel = glm::scale(model, glm::vec3(10.0f)); // radius 10.0f
+
 		planetPBRShader.Bind();
 		planetPBRShader.SetMat4("projection", projection);
 		planetPBRShader.SetMat4("view", view);
-		planetPBRShader.SetMat4("model", model);
+		planetPBRShader.SetMat4("model", pbrModel);
 		planetPBRShader.SetVec3("viewPos", camera->position); // view(eye) position
-		planetPBRShader.SetMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+		planetPBRShader.SetMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(pbrModel))));
 
 		planetPBRShader.SetInt("albedoMap", 0);
 		planetPBRShader.SetInt("normalMap", 1);
@@ -130,7 +136,18 @@ int main()
 		planetPBRShader.SetVec3("directionalLightDirection", directionalLightDirection);
 		planetPBRShader.SetVec3("directionalLightColor", directionalLightColor);
 		planetPBRShader.SetFloat("directionalLightScale", directionalLightScale);
-		RenderPBRMars(planetPBRShader, sphere);
+		RenderPBRMars(planetPBRShader, pbrSphere);
+
+		if (togglePBRNormal) {
+			// enable planet normal appearance
+			geometryPBRShader.Bind();
+			geometryPBRShader.SetMat4("projection", projection);
+			geometryPBRShader.SetMat4("view", view);
+			geometryPBRShader.SetMat4("model", pbrModel);
+			geometryPBRShader.SetFloat("normal_magnitude", normal_magnitude);
+			geometryPBRShader.SetVec3("normal_color", normal_color);
+			RenderPBRMars(geometryPBRShader, pbrSphere);
+		}
 
 		// 3. Draw amount of rocks with instancing
 		// ---------------------------------------
@@ -146,37 +163,8 @@ int main()
 		rockShader.SetFloat("ka", Ka);
 		RenderInstancingRocks(rockShader, rock);
 
-		// 4. Render nanosuit.obj
-		// ------------------------------------------
-		nanosuitShader.Bind();
-		if (toggleNanosuitMovement) {
-			if (moveForward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, -0.1f));
-			if (moveBackward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, 0.1f));
-			if (moveLeft) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(-0.1f, 0.0f, 0.0f));
-			if (moveRight) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.1f, 0.0f, 0.0f));
-			if (moveUp) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.1f, 0.0f));
-			if (moveDown) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, -0.1f, 0.0f));
-			nanosuitModel = glm::rotate(nanosuitModel, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-		}
-		nanosuitShader.SetMat4("projection", projection);
-		nanosuitShader.SetMat4("view", view);
-		nanosuitShader.SetMat4("model", nanosuitModel);
-
-		nanosuitShader.SetVec3("viewPos", camera->position);
-		nanosuitShader.SetVec3("lightColor", lightColor);
-		nanosuitShader.SetVec3("lightPosition", lightPosition);
-		nanosuitShader.SetVec3("directionalLightDirection", directionalLightDirection);
-		nanosuitShader.SetVec3("directionalLightColor", directionalLightColor);
-		nanosuitShader.SetFloat("directionalLightScale", directionalLightScale);
-
-		nanosuitShader.SetFloat("ka", Ka);
-		nanosuitShader.SetFloat("ks", Ks);
-		nanosuitShader.SetFloat("shininess", Ns);
-		nanosuitShader.SetFloat("kd", Kd);
-		nanosuit.Render(nanosuitShader, {"texture_diffuse", "texture_specular"});
-
-		// 5. Render light source with bloom
-		// ---------------------------------
+		// 5. Render light source
+		// ----------------------
 		model = glm::mat4(1.0f); // reset model matrix
 		model = glm::translate(model, lightPosition);
 		model = glm::scale(model, glm::vec3(0.5f));
@@ -186,6 +174,61 @@ int main()
 		bloomShader.SetMat4("model", model);
 		bloomShader.SetVec3("lightColor", lightColor);
 		RenderBloomLightSource(bloomShader, sphere);
+
+		// 4. Render nanosuit.obj
+		// ----------------------
+		if (!enableNanosuitExplosion) {
+			nanosuitShader.Bind();
+			if (toggleNanosuitMovement) { 
+				if (moveForward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, +0.1f));
+				if (moveBackward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, -0.1f));
+				if (moveLeft) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(+0.1f, 0.0f, 0.0f));
+				if (moveRight) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(-0.1f, 0.0f, 0.0f));
+				if (moveUp) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.1f, 0.0f));
+				if (moveDown) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, -0.1f, 0.0f));
+				nanosuitModel = glm::rotate(nanosuitModel, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+			nanosuitShader.SetMat4("projection", projection);
+			nanosuitShader.SetMat4("view", view);
+			nanosuitShader.SetMat4("model", nanosuitModel);
+
+			nanosuitShader.SetVec3("viewPos", camera->position);
+			nanosuitShader.SetVec3("lightColor", lightColor);
+			nanosuitShader.SetVec3("lightPosition", lightPosition);
+			nanosuitShader.SetVec3("directionalLightDirection", directionalLightDirection);
+			nanosuitShader.SetVec3("directionalLightColor", directionalLightColor);
+			nanosuitShader.SetFloat("directionalLightScale", directionalLightScale);
+
+			nanosuitShader.SetFloat("ka", Ka);
+			nanosuitShader.SetFloat("ks", Ks);
+			nanosuitShader.SetFloat("shininess", Ns);
+			nanosuitShader.SetFloat("kd", Kd);
+			nanosuit.Render(nanosuitShader, { "texture_diffuse", "texture_specular" });
+		}
+		else {
+			if (time - startNanosuitExplosionTime <= maxNanosuitExplosionDuration) {
+				// enable nanosuit explosion
+				nanosuitExplosionShader.Bind();
+				if (toggleNanosuitMovement) {
+					if (moveForward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, +0.1f));
+					if (moveBackward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, -0.1f));
+					if (moveLeft) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(+0.1f, 0.0f, 0.0f));
+					if (moveRight) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(-0.1f, 0.0f, 0.0f));
+					if (moveUp) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.1f, 0.0f));
+					if (moveDown) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, -0.1f, 0.0f));
+					nanosuitModel = glm::rotate(nanosuitModel, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+				}
+				nanosuitExplosionShader.SetMat4("projection", projection);
+				nanosuitExplosionShader.SetMat4("view", view);
+				nanosuitExplosionShader.SetMat4("model", nanosuitModel);
+
+				nanosuitExplosionShader.SetFloat("time", time);
+				nanosuitExplosionShader.SetFloat("startTime", startNanosuitExplosionTime);
+				nanosuitExplosionShader.SetFloat("duration", maxNanosuitExplosionDuration);
+
+				nanosuit.Render(nanosuitExplosionShader, { "texture_diffuse"});
+			}
+		}
 		
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(scene_manager.GetWindow());

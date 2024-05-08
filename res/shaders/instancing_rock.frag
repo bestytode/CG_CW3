@@ -8,5 +8,6 @@ uniform float ka;
 
 void main()
 {
-    FragColor = 20.0f * ka * texture(texture_diffuse1, TexCoords);
+    vec3 color = 20.0f * ka * texture(texture_diffuse1, TexCoords).rgb;
+    FragColor = vec4(color, 1.0f);
 }

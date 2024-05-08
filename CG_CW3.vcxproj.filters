@@ -77,24 +77,18 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dependencies\gl3w\src\glfw_test.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dependencies\gl3w\src\glut_test.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\debug_light.vs" />
-    <None Include="res\shaders\debug_light.fs" />
+    <None Include="res\shaders\debug_light.vert" />
+    <None Include="res\shaders\debug_light.frag" />
     <None Include="res\models\backpack\backpack.mtl" />
     <None Include="res\models\nanosuit\nanosuit.mtl" />
     <None Include="res\models\planet\planet.mtl" />
     <None Include="res\models\rock\rock.mtl" />
     <None Include="res\shaders\nanosuit.vert" />
     <None Include="res\shaders\nanosuit.frag" />
-    <None Include="res\shaders\pbr.vert" />
-    <None Include="res\shaders\pbr.frag" />
+    <None Include="res\shaders\planet_pbr.vert" />
+    <None Include="res\shaders\planet_pbr.frag" />
     <None Include="res\shaders\instancing_rock.frag" />
     <None Include="res\shaders\instancing_rock.vert" />
     <None Include="res\shaders\skybox.vert" />
@@ -104,6 +98,12 @@
     <None Include="dependencies\gl3w\README.rst" />
     <None Include="dependencies\gl3w\SConstruct" />
     <None Include="dependencies\gl3w\UNLICENSE" />
+    <None Include="res\shaders\geometry_planet_pbr.vert" />
+    <None Include="res\shaders\geometry_planet_pbr.frag" />
+    <None Include="res\shaders\geometry_planet_pbr.geom" />
+    <None Include="res\shaders\geometry_nanosuit.vert" />
+    <None Include="res\shaders\geometry_nanosuit.geom" />
+    <None Include="res\shaders\geometry_nanosuit.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\models\backpack\ao.jpg">

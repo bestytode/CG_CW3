@@ -104,6 +104,10 @@
     <None Include="res\shaders\geometry_nanosuit.vert" />
     <None Include="res\shaders\geometry_nanosuit.geom" />
     <None Include="res\shaders\geometry_nanosuit.frag" />
+    <None Include="res\shaders\bloom_final.frag" />
+    <None Include="res\shaders\bloom_final.vert" />
+    <None Include="res\shaders\bloom_blur.vert" />
+    <None Include="res\shaders\bloom_blur.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\models\backpack\ao.jpg">

@@ -20,7 +20,7 @@ uniform float kd;  // Diffuse coefficient
 uniform float ks;  // Specular coefficient
 uniform float shininess;  // Specular shininess factor
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
 
 void main()
 {

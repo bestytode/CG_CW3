@@ -121,4 +121,5 @@ glm::vec3 UpdateDirectionalLight(float totalTime)
 	return glm::normalize(glm::vec3(x, y, z));
 }
 
+
 #endif // CONFIG_H

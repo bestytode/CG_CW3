@@ -57,10 +57,13 @@ int main()
 	Shader skyboxShader("res/shaders/skybox.vert", "res/shaders/skybox.frag"); // sky box shader, render 1st
 	Shader rockShader("res/shaders/instancing_rock.vert", "res/shaders/instancing_rock.frag"); // instancing rock shader, alpha 1.0f
 	Shader planetPBRShader("res/shaders/planet_pbr.vert", "res/shaders/planet_pbr.frag"); // PBR material planet, enable showing normal by pressing N
-	Shader bloomShader("res/shaders/debug_light.vert", "res/shaders/debug_light.frag"); // light source shader
 	Shader nanosuitShader("res/shaders/nanosuit.vert", "res/shaders/nanosuit.frag"); // nanosuit shader, enable explosion by pressing B
 	Shader geometryPBRShader("res/shaders/geometry_planet_pbr.vert", "res/shaders/geometry_planet_pbr.frag", "res/shaders/geometry_planet_pbr.geom"); 
 	Shader nanosuitExplosionShader("res/shaders/geometry_nanosuit.vert", "res/shaders/geometry_nanosuit.frag", "res/shaders/geometry_nanosuit.geom");
+	
+	Shader bloomShader("res/shaders/bloom_light.vert", "res/shaders/bloom_light.frag"); // light source shader, but this one will render into two channels
+	Shader bloomBlur("res/shaders/bloom_blur.vert", "res/shaders/bloom_blur.frag"); // apply 2-pass Gaussian blur to bright areas
+	Shader final("res/shaders/bloom_final.vert", "res/shaders/bloom_final.frag"); // Combines HDR scene and blurred bloom for final output.
 
 	// Initialize matrices and speeds
 	InitModelMatricesAndRotationSpeeds(modelMatrices, rotationAxis, rotationSpeeds);
@@ -163,18 +166,6 @@ int main()
 		rockShader.SetFloat("ka", Ka);
 		RenderInstancingRocks(rockShader, rock);
 
-		// 5. Render light source
-		// ----------------------
-		model = glm::mat4(1.0f); // reset model matrix
-		model = glm::translate(model, lightPosition);
-		model = glm::scale(model, glm::vec3(0.5f));
-		bloomShader.Bind();
-		bloomShader.SetMat4("projection", projection);
-		bloomShader.SetMat4("view", view);
-		bloomShader.SetMat4("model", model);
-		bloomShader.SetVec3("lightColor", lightColor);
-		RenderBloomLightSource(bloomShader, sphere);
-
 		// 4. Render nanosuit.obj
 		// ----------------------
 		if (!enableNanosuitExplosion) {
@@ -209,15 +200,6 @@ int main()
 			if (time - startNanosuitExplosionTime <= maxNanosuitExplosionDuration) {
 				// enable nanosuit explosion
 				nanosuitExplosionShader.Bind();
-				if (toggleNanosuitMovement) {
-					if (moveForward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, +0.1f));
-					if (moveBackward) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.0f, -0.1f));
-					if (moveLeft) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(+0.1f, 0.0f, 0.0f));
-					if (moveRight) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(-0.1f, 0.0f, 0.0f));
-					if (moveUp) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, 0.1f, 0.0f));
-					if (moveDown) nanosuitModel = glm::translate(nanosuitModel, glm::vec3(0.0f, -0.1f, 0.0f));
-					nanosuitModel = glm::rotate(nanosuitModel, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-				}
 				nanosuitExplosionShader.SetMat4("projection", projection);
 				nanosuitExplosionShader.SetMat4("view", view);
 				nanosuitExplosionShader.SetMat4("model", nanosuitModel);
@@ -229,6 +211,19 @@ int main()
 				nanosuit.Render(nanosuitExplosionShader, { "texture_diffuse"});
 			}
 		}
+
+		// 5. Render light source with bloom
+		// ---------------------------------
+		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+		model = glm::mat4(1.0f); // reset model matrix
+		model = glm::translate(model, lightPosition);
+		model = glm::scale(model, glm::vec3(0.5f));
+		bloomShader.Bind();
+		bloomShader.SetMat4("projection", projection);
+		bloomShader.SetMat4("view", view);
+		bloomShader.SetMat4("model", model);
+		bloomShader.SetVec3("lightColor", lightColor);
+		RenderBloomLightSource(bloomShader, sphere);
 		
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		glfwSwapBuffers(scene_manager.GetWindow());

@@ -184,8 +184,8 @@
     <None Include="res\models\nanosuit\nanosuit.mtl" />
     <None Include="res\models\planet\planet.mtl" />
     <None Include="res\models\rock\rock.mtl" />
-    <None Include="res\shaders\debug_light.frag" />
-    <None Include="res\shaders\debug_light.vert" />
+    <None Include="res\shaders\bloom_light.frag" />
+    <None Include="res\shaders\bloom_light.vert" />
     <None Include="res\shaders\geometry_nanosuit.frag" />
     <None Include="res\shaders\geometry_nanosuit.geom" />
     <None Include="res\shaders\geometry_nanosuit.vert" />

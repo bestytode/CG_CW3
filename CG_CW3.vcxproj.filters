@@ -79,8 +79,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\debug_light.vert" />
-    <None Include="res\shaders\debug_light.frag" />
+    <None Include="res\shaders\bloom_light.vert" />
+    <None Include="res\shaders\bloom_light.frag" />
     <None Include="res\models\backpack\backpack.mtl" />
     <None Include="res\models\nanosuit\nanosuit.mtl" />
     <None Include="res\models\planet\planet.mtl" />
